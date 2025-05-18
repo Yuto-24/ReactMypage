@@ -1,0 +1,42 @@
+services:
+  hp_react:
+    container_name: react_hp_${USER_NAME}
+    build:
+      context: hp_react
+      dockerfile: Dockerfile
+      args:
+        NODE_IMG_VER: 23.11
+        REACT_APP_DIR_NAME: my_page
+    volumes:
+      - type: bind
+        source: .
+        target: /var/git
+      - type: bind
+        source: ~/.ssh
+        target: /root/.ssh
+      - type: bind
+        source: ./hp_react
+        target: /app
+      - ./cache/hp_react/.vscode-server:/root/.vscode-server
+    ports:
+      - 3000:3000
+    restart: always
+    stdin_open: true
+    tty: true
+    networks:
+      - default
+    command:
+      - /bin/bash
+      - -c
+      - |
+        echo "pwd"
+        pwd
+        echo "yarn install"
+        yarn install
+        echo "yarn start"
+        yarn start
+
+networks:
+  default:
+    name: ${NET_NAME}
+    external: true
